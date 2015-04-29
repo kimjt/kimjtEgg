@@ -12,13 +12,13 @@
                 username = that.get("username").trim(),
                 password = that.get("password").trim();
 
-            if (username === "" || password === "") {
+            if (username === "") {
                 navigator.notification.alert("Both fields are required!",
                     function () { }, "Login failed", 'OK');
 
                 return;
             }
-
+            
             that.set("isLoggedIn", true);
         },
 

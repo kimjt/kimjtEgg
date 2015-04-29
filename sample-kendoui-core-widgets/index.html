@@ -11,11 +11,79 @@
     <script src="kendo/js/jquery.min.js"></script>
     <script src="kendo/js/kendo.mobile.min.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=true"></script>
-
+    <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.11.2.min.js"></script>
     <script src="scripts/app.js"></script>
     <script src="scripts/login.js"></script>
     <script src="scripts/location.js"></script>
     <script src="scripts/weather.js"></script>
+    <script src="scripts/compass.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+             $("#joinOk").click(function(){
+                    $.ajax({
+                         url : "http://samgital.co.kr:8080/mobile/mapapp/tMapAppTest.do",
+                         data : { "id" : $("#id").val() },
+                         success : function(responseData){
+                             var data = JSON.parse(responseData);
+                             if(!data){
+                                 alert("존재하지 않는 ID입니다");
+                                 return false;
+                             }else{
+                                 $("#login").hide();
+                                 $("#user").show();
+                             }
+                             var html = '';
+                             html += 'Welcome, '+data.name+'!';
+                             $("#name").html(html);
+                             $("#memId").val(data.id);
+                         }
+                     });
+             });
+            $("#logout").click(function(){
+                $.ajax({
+                    url:"http://192.168.10.131:8080/mobile/mapapp/createKML.do",
+                    data:({
+                        memId : $("#memId").val()
+                    })
+                });
+                $("#login").show();
+                $("#name").html("");
+                $("#memId").val("");
+                $("#user").hide();
+            });
+        });
+        
+        
+        function pos(){
+            if($("#memId").val()==""){
+                alert("로그인 해주세요.");
+            }else{
+                forcurs = setInterval(function(){currPos();}, 5000);
+                $("#save").show();
+            }
+        }
+        
+        function stop(){
+            clearInterval(forcurs);
+            $("#save").hide();
+        }
+        
+        function currPos(){
+            navigator.geolocation.getCurrentPosition(function(position) {
+            $("#mgLongitude").val(position.coords.longitude);
+            $("#mgLatitude").val(position.coords.latitude);
+            $.ajax({
+                    url:"http://samgital.co.kr:8080/mobile/mapapp/tMapAppGPS.do",
+                    data:({
+                        memId : $("#memId").val(),
+                        mgLatitude : $("#mgLatitude").val(),
+                        mgLongitude : $("#mgLongitude").val(),
+                        mgAddr : $("#mgAddr").val()
+                    })
+                });
+            });
+        }
+    </script>
 </head>
 <body>
     <!--Home View-->
@@ -45,28 +113,32 @@
         data-model="app.loginService.viewModel">
 
         <div class="logo-image"></div>
-        <div>
-            <h3 data-bind="visible: isLoggedIn">Welcome, <span data-bind="    text: username"></span>!</h3>
-            <input id="logout" type="submit" data-role="button" data-bind="click: onLogout, visible: isLoggedIn" value="Logout" class="login-button" />
+        <div id="user" style="display: none;">
+            <h3 id="name"></h3>
+            <input id="logout" type="submit" data-role="button" data-bind="click: onLogout" value="Logout" class="login-button" />
         </div>
-        <form data-bind="events: { keyup: checkEnter }">
+        <form data-bind="events: { keyup: checkEnter }" id="login">
             <h3 data-bind="invisible: isLoggedIn">Enter your credentials:</h3>
-            <ul data-role="listview" data-style="inset" data-bind="invisible: isLoggedIn">
+            <ul data-role="listview" data-style="inset">
                 <li>
                     <label>
                         <div>Username</div>
-                        <input type="text" data-bind="value: username" />
+                        <input type="text" id="id" data-bind="value: username"/>
                     </label>
                 </li>
+                <!--
                 <li>
                     <label>
                         <div>Password</div>
                         <input type="password" data-bind="value: password" />
                     </label>
                 </li>
+                -->
             </ul>
-            <input id="login" type="submit" data-role="button" data-bind="click: onLogin, invisible: isLoggedIn" value="Login" class="login-button" />
+            <br>
+            <input type="submit" class="login-button" data-role="button" id="joinOk" value="로그인"/>
         </form>
+            
     </div>
 
     <!--Location View-->
@@ -90,7 +162,19 @@
                 <input id="map-address" type="search" class="map-tools-input" data-bind="value: address" placeholder="Address" />
                 <button id="map-search" class="map-tools-button search" data-bind="click: onSearchAddress"></button>
             </div>
+            <div data-role="tabstrip">
+                <a onclick="pos();" data-icon="play"></a>
+                <a onclick="stop();" data-icon="stop"></a>
+                <a data-icon="reply" data-bind="click: vecter"></a>
+            </div>
+            <div style="display: none;" id="save">위치정보를 저장 중입니다...</div>
+            <div id="result" style="display: none;" class="desc"></div>
+            <div class="separator"></div>
         </div>
+        <input type="hidden" id="memId" name="memId" value="">
+        <input type="hidden" id="mgLatitude" name="mgLatitude">
+        <input type="hidden" id="mgLongitude" name="mgLongitude">
+        <input type="hidden" id="mgAddr" name="mgAddr">
     </div>
 
     <!--Weather View-->

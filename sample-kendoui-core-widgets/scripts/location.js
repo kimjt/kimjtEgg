@@ -14,7 +14,7 @@
         hideSearch: false,
         
         vecter: function(){
-            var ctaLayer = new google.maps.KmlLayer('http://javacool.net/m/track.kmz');
+            var ctaLayer = new google.maps.KmlLayer('http://samgital.co.kr:8080/mobile/kim.xml');
             ctaLayer.setMap(map);
         },
         
@@ -25,7 +25,7 @@
             that._isLoading = true;
             that.toggleLoading();
 
-            navigator.geolocation.watchPosition(
+            navigator.geolocation.getCurrentPosition(
                 function (position) {
                     position = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
                     map.panTo(position);

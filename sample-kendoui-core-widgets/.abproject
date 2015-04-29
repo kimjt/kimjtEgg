@@ -6,7 +6,7 @@
   "AppIdentifier": "com.telerik.samplekendouicorewidgets",
   "DisplayName": "sample-kendoui-core-widgets",
   "Author": "",
-  "Description": "",
+  "Description": "sample-kendoui-core-widgets",
   "BundleVersion": "1.0",
   "AndroidVersionCode": "1",
   "iOSDeviceFamily": [
@@ -73,5 +73,9 @@
     "ID_RESOLUTION_WXGA",
     "ID_RESOLUTION_HD720P"
   ],
-  "Framework": "Cordova"
+  "Framework": "Cordova",
+  "WP8WindowsPublisherName": "CN=Telerik",
+  "WP8PackageIdentityName": "1234Telerik.com.telerik.samplekendouicorewidgets",
+  "WP8PublisherID": "{73e915e6-c860-4202-b509-b193c70208ac}",
+  "WP8ProductID": "{9d92d3d7-9160-4b86-9321-f094c71e15e3}"
 }
